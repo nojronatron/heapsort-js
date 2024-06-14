@@ -86,6 +86,38 @@ class Heapsorter {
   }
 
   removeTopItem() {
+    if (this.backingArr.length < 1) {
+      return;
+    }
+    if (this.backingArr.length == 1) {
+      return this.backingArr.pop();
+    }
+
+    const topItem = this.backingArr[0];
+    this.backingArr[0] = this.backingArr.pop();
+    let maxIdx = this.backingArr.length - 1;
+    let parentIdx = 0;
+    // if head value is less than either of its child node values
+    // swap it will the larger child value
+    while (this.itemHasChildInTree(parentIdx, maxIdx, true)) {
+      // parent has a left child at least now check for right child
+      let selectedIdx = this.getLeftChildIndex(parentIdx);
+      if (this.itemHasChildInTree(parentIdx, maxIdx, false)) {
+        let rightIdx = this.getRightChildIndex(parentIdx);
+        selectedIdx =
+          this.backingArr[selectedIdx] > this.backingArr[rightIdx]
+            ? selectedIdx
+            : rightIdx;
+      }
+      if (this.backingArr[selectedIdx] > this.backingArr[parentIdx]) {
+        this.swapItems(selectedIdx, parentIdx);
+      }
+      parentIdx = selectedIdx;
+    }
+    return topItem;
+  }
+
+  removeTopItemOld() {
     // Note: if backing array is empty shift returns undefined
     // use shift to remove zeroeth index from array
     const topItem = this.backingArr.shift();
