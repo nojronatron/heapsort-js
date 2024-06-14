@@ -127,4 +127,22 @@ describe('Heapsort', () => {
     sut.swapItems(1, 3);
     expect(sut.backingArr).toStrictEqual(expectedArr);
   });
+
+  test('remove items from heap (largest to smallest is default)', () => {
+    const startingHeap = [25, 15, 20, 10, 0, 5];
+    const sut = new Heapsorter();
+    expect(sut.isHeap(startingHeap)).toBe(true);
+    sut.backingArr = startingHeap;
+
+    const expectedResults = [25, 20, 15, 10, 5, 0];
+    const resultArr = [];
+
+    for (let idx = 1; idx <= expectedResults.length; idx++) {
+      let topItem = sut.removeTopItem();
+      resultArr.push(topItem);
+      expect(resultArr).toStrictEqual(expectedResults.slice(0, idx));
+    }
+
+    expect(sut.backingArr).toStrictEqual([]);
+  });
 });
