@@ -21,6 +21,13 @@ class Heapsorter {
     return result;
   }
 
+  /**
+   * Checks if an item has a child in a tree given its index and the maximum index.
+   * @param {number} itemIdx - The index of the item.
+   * @param {number} maxIdx - The maximum index in the tree.
+   * @param {boolean} [left=true] - Indicates whether to check for the left child (default) or the right child.
+   * @returns {boolean|undefined} - Returns true if the item has a child, false if not, or undefined if the input is invalid.
+   */
   itemHasChildInTree(itemIdx, maxIdx, left = true) {
     let itemIdxNum = this.getValueAsNumber(itemIdx);
     let maxIdxNum = this.getValueAsNumber(maxIdx);
@@ -34,6 +41,11 @@ class Heapsorter {
     return maxChildIdx <= maxIdxNum;
   }
 
+  /**
+   * Converts the input number to a numeric value.
+   * @param {any} inputNum - The input number to be converted.
+   * @returns {number|undefined} - The converted numeric value or undefined if the input is not a number.
+   */
   getValueAsNumber(inputNum) {
     if (typeof inputNum === 'number') {
       return Number(inputNum);
@@ -42,6 +54,12 @@ class Heapsorter {
     }
   }
 
+  /**
+   * Checks if the given array represents a valid heap.
+   * Runs in O(n) time. Exists primarily as a way to test for Heapiness.
+   * @param {Array} inpArr - The input array to be checked.
+   * @returns {boolean} - Returns true if the array is a valid heap, false otherwise.
+   */
   isHeap(inpArr) {
     let maxIdx = inpArr.length - 1;
     let currIdx = 0;
@@ -127,38 +145,12 @@ class Heapsorter {
     return topItem;
   }
 
-  removeTopItemOld() {
-    // Note: if backing array is empty shift returns undefined
-    // use shift to remove zeroeth index from array
-    const topItem = this.backingArr.shift();
-    if (topItem !== undefined) {
-      // compare new Head to its children and swap it with largest value
-      // continue through descendants until leaf node is reached then return topItem
-      let parentIdx = 0;
-      let maxIdx = this.backingArr.length - 1;
-
-      while (this.itemHasChildInTree(parentIdx, maxIdx, true)) {
-        let selectedChildIdx = this.getLeftChildIndex(parentIdx);
-
-        if (this.itemHasChildInTree(parentIdx, maxIdx, false)) {
-          let rightIdx = this.getRightChildIndex(parentIdx);
-          selectedChildIdx =
-            this.backingArr[selectedChildIdx] > this.backingArr[rightIdx]
-              ? selectedChildIdx
-              : rightIdx;
-        }
-
-        if (this.backingArr[parentIdx] < this.backingArr[selectedChildIdx]) {
-          this.swapItems(parentIdx, selectedChildIdx);
-        }
-        parentIdx = selectedChildIdx;
-      }
-    }
-
-    return topItem;
-  }
-
-  // heapsort an input array without using additional storage
+  /**
+   * Sorts an array using the heapsort algorithm.
+   *
+   * @param {Array} inputArr - The array to be sorted.
+   * @returns {Array} - The sorted array.
+   */
   static heapsort(inputArr) {
     // validate input is an array
     if (Array.isArray(inputArr) !== true) {
@@ -171,15 +163,20 @@ class Heapsorter {
       inputArr = Heapsorter.makeHeap(inputArr, lastIdx);
 
       // swap head and last item
-      let temp = inputArr[lastIdx];
-      inputArr[lastIdx] = inputArr[0];
-      inputArr[0] = temp;
+      inputArr = Heapsorter.swapItemsInArr(inputArr, 0, lastIdx);
       // repeat steps until only idx 0 remains
     }
     // return the heapsorted array
     return inputArr;
   }
 
+  /**
+   * Converts an input array into a max heap.
+   *
+   * @param {Array} inpArr - The input array to be converted into a max heap.
+   * @param {number} endIdx - The index of the last element in the input array.
+   * @returns {Array} - The input array converted into a max heap.
+   */
   static makeHeap(inpArr, endIdx) {
     if (endIdx <= 0) {
       return inpArr;
@@ -191,15 +188,8 @@ class Heapsorter {
       for (let childIdx = endIdx; childIdx >= firstIdx; childIdx--) {
         let parentIdx = Math.floor((childIdx - 1) / 2);
         // work from leaf nodes to root
-        // while (parentIdx >= firstIdx) {
-        // swap if child value greater than parent value
         if (inpArr[childIdx] > inpArr[parentIdx]) {
-          let tempValue = inpArr[parentIdx];
-          inpArr[parentIdx] = inpArr[childIdx];
-          inpArr[childIdx] = tempValue;
-          // } else {
-          //   break;
-          // }
+          inpArr = Heapsorter.swapItemsInArr(inpArr, childIdx, parentIdx);
         }
       }
       return inpArr;
@@ -207,6 +197,27 @@ class Heapsorter {
     return [];
   }
 
+  /**
+   * Swaps two items in an array.
+   *
+   * @param {Array} arrIn - The input array.
+   * @param {number} leftIdx - The index of the first item to swap.
+   * @param {number} rightIdx - The index of the second item to swap.
+   * @returns {Array} - The array with the swapped items.
+   */
+  static swapItemsInArr(arrIn, leftIdx, rightIdx) {
+    let temp = arrIn[leftIdx];
+    arrIn[leftIdx] = arrIn[rightIdx];
+    arrIn[rightIdx] = temp;
+    return arrIn;
+  }
+
+  /**
+   * Swaps the items at the given indices in the backing array.
+   *
+   * @param {number} leftIdx - The index of the first item to swap.
+   * @param {number} rightIdx - The index of the second item to swap.
+   */
   swapItems(leftIdx, rightIdx) {
     let temp = this.backingArr[leftIdx];
     this.backingArr[leftIdx] = this.backingArr[rightIdx];
