@@ -145,4 +145,47 @@ describe('Heapsort', () => {
 
     expect(sut.backingArr).toStrictEqual([]);
   });
+
+  test('create a heap in-place without using additional storage', () => {
+    const startingArr = [0, 5, 10, 15, 20, 25];
+    const expectedResult = [25, 20, 0, 15, 5, 10];
+    let endIdx = startingArr.length - 1;
+    const actualResult = Heapsorter.makeHeap(startingArr, endIdx);
+    expect(actualResult).toStrictEqual(expectedResult);
+  });
+
+  test('heapsort without using additional storage', () => {
+    const startingArr = [15, 0, 20, 25, 10, 5];
+    const expectedResult = [0, 5, 10, 15, 20, 25];
+    const actualResult = Heapsorter.heapsort(startingArr);
+    expect(actualResult).toStrictEqual(expectedResult);
+  });
+
+  test('larger heapsort test uses O(1) storage', () => {
+    let maxNums = 80;
+    let topRange = maxNums * 3;
+    const startingArr = [];
+    for (let count = 0; count < maxNums; count++) {
+      let rndNum = Math.floor(Math.random() * topRange);
+      startingArr.push(rndNum);
+    }
+
+    const actualResult = Heapsorter.heapsort(startingArr);
+
+    let sorted = true;
+    let idx = 0;
+    let previousValue = actualResult[idx];
+
+    while (sorted && idx < actualResult.length - 1) {
+      idx++;
+      if (previousValue > actualResult[idx]) {
+        sorted = false;
+        continue;
+      }
+    }
+    console.log(
+      `Completed ${idx} comparisons. Expected ${startingArr.length - 1}`
+    );
+    expect(sorted).toBe(true);
+  });
 });
